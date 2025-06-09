@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kajal Construction | Structural Estimation Tool</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.7.0/math.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4a148c;
+            --secondary: #7b1fa2;
+            --accent: #e91e63;
+            --light: #f3e5f5;
+            --dark: #311b92;
+            --success: #2e7d32;
+            --warning: #ff8f00;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 25px 0;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: white;
+        }
+        
+        .tagline {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+        
+        .since {
+            background: var(--accent);
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: inline-block;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab-btn {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #eee;
+            border: none;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn.active {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .calculator-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        @media (max-width: 768px) {
+            .calculator-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .input-section, .results-section {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+        
+        .section-title {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 10px;
+            color: var(--secondary);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(123, 31, 162, 0.2);
+        }
+        
+        .btn {
+            display: inline-block;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        
+        .btn-accent {
+            background: var(--accent);
+        }
+        
+        .btn-accent:hover {
+            background: #c2185b;
+        }
+        
+        .result-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .result-title {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            color: var(--primary);
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .result-value {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+        
+        .result-details {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .material-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .material-table th, .material-table td {
+            padding: 8px 10px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .material-table th {
+            background-color: var(--light);
+            color: var(--dark);
+            font-weight: 500;
+        }
+        
+        .material-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .total-row {
+            font-weight: bold;
+            background-color: var(--light);
+        }
+        
+        .summary-card {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .summary-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .summary-value {
+            font-size: 1.8rem;
+            font-weight: 600;
+            text-align: center;
+            margin: 15px 0;
+        }
+        
+        .summary-note {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            color: #666;
+            font-size: 0.85rem;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animated {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        
+        @media print {
+            header, footer, .btn, .tabs {
+                display: none;
+            }
+            
+            .container {
+                padding: 0;
+            }
+            
+            .input-section {
+                display: none;
+            }
+            
+            .tab-content {
+                display: block !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">Kajal Construction</div>
+            <div class="tagline">Complete Structural Estimation Tool</div>
+            <div class="since">Since 2025</div>
+        </header>
+        
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="slab">Slab</button>
+            <button class="tab-btn" data-tab="beam">Beam</button>
+            <button class="tab-btn" data-tab="column">Column</button>
+            <button class="tab-btn" data-tab="footing">Footing</button>
+            <button class="tab-btn" data-tab="summary">Summary</button>
+        </div>
+        
+        <div class="calculator-container">
+            <div class="input-section">
+                <!-- Slab Tab -->
+                <div class="tab-content active" id="slab-tab">
+                    <h2 class="section-title"><i class="fas fa-border-style"></i> Slab Details</h2>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="slabLength">Length (m)</label>
+                            <input type="number" id="slabLength" value="5" step="0.1" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="slabWidth">Width (m)</label>
+                            <input type="number" id="slabWidth" value="4" step="0.1" min="1">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="slabThickness">Thickness (m)</label>
+                        <input type="number" id="slabThickness" value="0.125" step="0.01" min="0.1">
+                    </div>
+                    
+                    <h3 class="section-title"><i class="fas fa-grip-lines"></i> Reinforcement</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="slabMainDia">Main Bars Dia (mm)</label>
+                            <select id="slabMainDia">
+                                <option value="8">8mm</option>
+                                <option value="10" selected>10mm</option>
+                                <option value="12">12mm</option>
+                                <option value="16">16mm</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="slabMainSpacing">Spacing (mm)</label>
+                            <input type="number" id="slabMainSpacing" value="150" min="75" step="25">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="slabDistDia">Distribution Bars Dia (mm)</label>
+                            <select id="slabDistDia">
+                                <option value="8">8mm</option>
+                                <option value="10" selected>10mm</option>
+                                <option value="12">12mm</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="slabDistSpacing">Spacing (mm)</label>
+                            <input type="number" id="slabDistSpacing" value="150" min="75" step="25">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Beam Tab -->
+                <div class="tab-content" id="beam-tab">
+                    <h2 class="section-title"><i class="fas fa-ruler-combined"></i> Beam Details</h2>
+                    
+                    <div class="form-group">
+                        <label for="beamLength">Length (m)</label>
+                        <input type="number" id="beamLength" value="5" step="0.1" min="1">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="beamWidth">Width (mm)</label>
+                            <input type="number" id="beamWidth" value="230" min="150" step="10">
+                        </div>
+                        <div class="form-group">
+                            <label for="beamDepth">Depth (mm)</label>
+                            <input type="number" id="beamDepth" value="450" min="200" step="10">
+                        </div>
+                    </div>
+                    
+                    <h3 class="section-title"><i class="fas fa-grip-lines"></i> Reinforcement</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="beamTopBars">Top Bars (Nos)</label>
+                            <input type="number" id="beamTopBars" value="3" min="2" max="6">
+                        </div>
+                        <div class="form-group">
+                            <label for="beamTopDia">Dia (mm)</label>
+                            <select id="beamTopDia">
+                                <option value="10">10mm</option>
+                                <option value="12" selected>12mm</option>
+                                <option value="16">16mm</option>
+                                <option value="20">20mm</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="beamBottomBars">Bottom Bars (Nos)</label>
+                            <input type="number" id="beamBottomBars" value="3" min="2" max="6">
+                        </div>
+                        <div class="form-group">
+                            <label for="beamBottomDia">Dia (mm)</label>
+                            <select id="beamBottomDia">
+                                <option value="10">10mm</option>
+                                <option value="12">12mm</option>
+                                <option value="16" selected>16mm</option>
+                                <option value="20">20mm</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="beamStirrupDia">Stirrup Dia (mm)</label>
+                            <select id="beamStirrupDia">
+                                <option value="6">6mm</option>
+                                <option value="8" selected>8mm</option>
+                                <option value="10">10mm</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="beamStirrupSpacing">Spacing (mm)</label>
+                            <input type="number" id="beamStirrupSpacing" value="150" min="75" step="25">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Column Tab -->
+                <div class="tab-content" id="column-tab">
+                    <h2 class="section-title"><i class="fas fa-columns"></i> Column Details</h2>
+                    
+                    <div class="form-group">
+                        <label for="columnHeight">Height (m)</label>
+                        <input type="number" id="columnHeight" value="3" step="0.1" min="1">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="columnWidth">Width (mm)</label>
+                            <input type="number" id="columnWidth" value="300" min="200" step="50">
+                        </div>
+                        <div class="form-group">
+                            <label for="columnDepth">Depth (mm)</label>
+                            <input type="number" id="columnDepth" value="300" min="200" step="50">
+                        </div>
+                    </div>
+                    
+                    <h3 class="section-title"><i class="fas fa-grip-lines"></i> Reinforcement</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="columnBars">Number of Bars</label>
+                            <input type="number" id="columnBars" value="8" min="4" max="12">
+                        </div>
+                        <div class="form-group">
+                            <label for="columnBarDia">Dia (mm)</label>
+                            <select id="columnBarDia">
+                                <option value="10">10mm</option>
+                                <option value="12" selected>12mm</option>
+                                <option value="16">16mm</option>
+                                <option value="20">20mm</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="columnTieDia">Tie Dia (mm)</label>
+                            <select id="columnTieDia">
+                                <option value="6">6mm</option>
+                                <option value="8" selected>8mm</option>
+                                <option value="10">10mm</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="columnTieSpacingA">Zone A Spacing (mm)</label>
+                            <input type="number" id="columnTieSpacingA" value="100" min="75" step="25">
+                        </div>
+                        <div class="form-group">
+                            <label for="columnTieSpacingB">Zone B Spacing (mm)</label>
+                            <input type="number" id="columnTieSpacingB" value="150" min="100" step="25">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Footing Tab -->
+                <div class="tab-content" id="footing-tab">
+                    <h2 class="section-title"><i class="fas fa-layer-group"></i> Footing Details</h2>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="footingLength">Length (m)</label>
+                            <input type="number" id="footingLength" value="1.5" step="0.1" min="0.5">
+                        </div>
+                        <div class="form-group">
+                            <label for="footingWidth">Width (m)</label>
+                            <input type="number" id="footingWidth" value="1.5" step="0.1" min="0.5">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="footingThickness">Thickness (m)</label>
+                        <input type="number" id="footingThickness" value="0.3" step="0.05" min="0.2">
+                    </div>
+                    
+                    <h3 class="section-title"><i class="fas fa-grip-lines"></i> Reinforcement</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="footingMainDia">Main Bars Dia (mm)</label>
+                            <select id="footingMainDia">
+                                <option value="8">8mm</option>
+                                <option value="10" selected>10mm</option>
+                                <option value="12">12mm</option>
+                                <option value="16">16mm</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="footingMainSpacing">Spacing (mm)</label>
+                            <input type="number" id="footingMainSpacing" value="150" min="75" step="25">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Summary Tab -->
+                <div class="tab-content" id="summary-tab">
+                    <h2 class="section-title"><i class="fas fa-calculator"></i> Material Rates</h2>
+                    
+                    <div class="form-group">
+                        <label for="cementRate">Cement Rate (per 50kg bag)</label>
+                        <input type="number" id="cementRate" value="400" min="100" step="10">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="sandRate">Sand Rate (per m³)</label>
+                        <input type="number" id="sandRate" value="800" min="100" step="50">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="aggregateRate">Aggregate Rate (per m³)</label>
+                        <input type="number" id="aggregateRate" value="1000" min="100" step="50">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="steelRate">Steel Rate (per kg)</label>
+                        <input type="number" id="steelRate" value="70" min="30" step="5">
+                    </div>
+                    
+                    <button id="calculateBtn" class="btn btn-block">Calculate All Quantities</button>
+                    <button id="resetBtn" class="btn btn-accent btn-block" style="margin-top: 10px;">Reset All Values</button>
+                </div>
+            </div>
+            
+            <div class="results-section" id="resultsSection">
+                <div class="tab-content active" id="slab-results">
+                    <h2 class="section-title"><i class="fas fa-border-style"></i> Slab Estimation</h2>
+                    
+                    <div class="result-card animated">
+                        <div class="result-title">
+                            <span>Concrete Volume</span>
+                            <span class="result-value" id="slabConcreteVol">0 m³</span>
+                        </div>
+                        <div class="result-details">
+                            Size: <span id="slabDimensions">0m × 0m × 0m</span> | Grade: M25
+                        </div>
+                    </div>
+                    
+                    <div class="result-card animated" style="animation-delay: 0.1s;">
+                        <div class="result-title">
+                            <span>Main Reinforcement</span>
+                            <span class="result-value" id="slabMainSteel">0 kg</span>
+                        </div>
+                        <div class="result-details">
+                            <span id="slabMainBars">0</span> bars of <span id="slabMainDiaRes">0mm</span> @ <span id="slabMainSpacingRes">0mm</span> c/c
+                        </div>
+                    </div>
+                    
+                    <div class="result-card animated" style="animation-delay: 0.2s;">
+                        <div class="result-title">
+                            <span>Distribution Reinforcement</span>
+                            <span class="result-value" id="slabDistSteel">0 kg</span>
+                        </div>
+                        <div class="result-details">
+                            <span id="slabDistBars">0</span> bars of <span id="slabDistDiaRes">0mm</span> @ <span id="slabDistSpacingRes">0mm</span> c/c
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="beam-results">
+                    <h2 class="section-title"><i class="fas fa-ruler-combined"></i> Beam Estimation</h2>
+                    
+                    <div class="result-card animated">
+                        <div class="result-title">
+                            <span>Concrete Volume</span>
+                            <span class="result-value" id="beamConcreteVol">0 m³</span>
+                        </div>
+                        <div class="result-details">
+                            Size: <span id="beamDimensions">0mm × 0mm × 0m</span> | Grade: M25
+                        </div>
+                    </div>
+                    
+                    <div class="result-card animated" style="animation-delay: 0.1s;">
+                        <div class="result-title">
+                            <span>Top Reinforcement</span>
+                            <span class="result-value" id="beamTopSteel">0 kg</span>
+                        </div>
+                        <div class="result-details">
+                            <span id="beamTopBarsRes">0</span> nos of <span id="beamTopDiaRes">0mm</span> bars
+                        </div>
+                    </div>
+                    
+                    <div class="result-card animated" style="animation-delay: 0.2s;">
+                        <div class="result-title">
+                            <span>Bottom Reinforcement</span>
+                            <span class="result-value" id="beamBottomSteel">0 kg</span>
+                        </div>
+                        <div class="result-details">
+                            <span id="beamBottomBarsRes">0</span> nos of <span id="beamBottomDiaRes">0mm</span> bars
+                        </div>
+                    </div>
+                    
+                    <div class="result-card animated" style="animation-delay: 0.3s;">
+                        <div class="result-title">
+                            <span>Stirrups</span>
+                            <span class="result-value" id="beamStirrupSteel">0 kg</span>
+                        </div>
+                        <div class="result-details">
+                            <span id="beamStirrupDiaRes">0mm</span> @ <span id="beamStirrupSpacingRes">0mm</span> c/c
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="column-results">
+                    <h2 class="section-title"><i class="fas fa-columns"></i> Column Estimation</h2>
+                    
+                    <div class="result-card animated">
+                        <div class="result-title">
+                            <span>Concrete Volume</span>
+                            <span class="result-value" id="columnConcreteVol">0 m³</span>
+                        </div>
+                        <div class="result-details">
+                            Size: <span id="columnDimensions">0mm × 0mm × 0m</span> | Grade: M25
+                        </div>
+                    </div>
+                    
+                    <div class="result-card animated" style="animation-delay: 0.1s;">
+                        <div class="result-title">
+                            <span>Main Reinforcement</span>
+                            <span class="result-value" id="columnMainSteel">0 kg</span>
+                        </div>
+                        <div class="result-details">
+                            <span id="columnBarsRes">0</span> nos of <span id="columnBarDiaRes">0mm</span> bars
+                        </div>
+                    </div>
+                    
+                    <div class="result-card animated" style="animation-delay: 0.2s;">
+                        <div class="result-title">
+                            <span>Ties</span>
+                            <span class="result-value" id="columnTieSteel">0 kg</span>
+                        </div>
+                        <div class="result-details">
+                            <span id="columnTieDiaRes">0mm</span> @ <span id="columnTieSpacingARes">0mm</span> (Zone A) & <span id="columnTieSpacingBRes">0mm</span> (Zone B)
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="footing-results">
+                    <h2 class="section-title"><i class="fas fa-layer-group"></i> Footing Estimation</h2>
+                    
+                    <div class="result-card animated">
+                        <div class="result-title">
+                            <span>Concrete Volume</span>
+                            <span class="result-value" id="footingConcreteVol">0 m³</span>
+                        </div>
+                        <div class="result-details">
+                            Size: <span id="footingDimensions">0m × 0m × 0m</span> | Grade: M20
+                        </div>
+                    </div>
+                    
+                    <div class="result-card animated" style="animation-delay: 0.1s;">
+                        <div class="result-title">
+                            <span>Reinforcement</span>
+                            <span class="result-value" id="footingSteel">0 kg</span>
+                        </div>
+                        <div class="result-details">
+                            <span id="footingMainDiaRes">0mm</span> @ <span id="footingMainSpacingRes">0mm</span> c/c both ways
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="summary-results">
+                    <h2 class="section-title"><i class="fas fa-file-invoice-dollar"></i> Cost Summary</h2>
+                    
+                    <div class="result-card animated">
+                        <div class="result-title">
+                            <span>Total Concrete Volume</span>
+                            <span class="result-value" id="totalConcreteVol">0 m³</span>
+                        </div>
+                        <div class="result-details">
+                            Includes slab, beams, columns and footings
+                        </div>
+                    </div>
+                    
+                    <div class="result-card animated" style="animation-delay: 0.1s;">
+                        <div class="result-title">
+                            <span>Total Steel Weight</span>
+                            <span class="result-value" id="totalSteelWeight">0 kg</span>
+                        </div>
+                        <div class="result-details">
+                            Includes all reinforcement
+                        </div>
+                    </div>
+                    
+                    <table class="material-table">
+                        <thead>
+                            <tr>
+                                <th>Material</th>
+                                <th>Quantity</th>
+                                <th>Unit Cost</th>
+                                <th>Total Cost</th>
+                            </tr>
+                        </thead>
+                        <tbody id="costBreakdown">
+                            <!-- Filled by JavaScript -->
+                        </tbody>
+                        <tfoot>
+                            <tr class="total-row">
+                                <td colspan="3">Total Estimated Cost</td>
+                                <td id="totalCost">₹0</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    
+                    <div class="summary-card animated" style="animation-delay: 0.3s;">
+                        <h3 class="summary-title">Project Cost Summary</h3>
+                        <div class="summary-value" id="projectTotal">₹0</div>
+                        <p class="summary-note">
+                            Note: This estimate includes material costs only. Labor, equipment and overheads are not included.
+                        </p>
+                    </div>
+                    
+                    <button id="printBtn" class="btn btn-block">
+                        <i class="fas fa-print"></i> Print Full Estimate
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2025 Kajal Construction. All Rights Reserved.</p>
+            <p>Professional Construction Solutions Since 2025</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab functionality
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // Update active tab button
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Update active tab content
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                    document.getElementById(`${tabId}-results`).classList.add('active');
+                });
+            });
+            
+            // Calculate button
+            const calculateBtn = document.getElementById('calculateBtn');
+            calculateBtn.addEventListener('click', calculateAll);
+            
+            // Reset button
+            const resetBtn = document.getElementById('resetBtn');
+            resetBtn.addEventListener('click', resetAll);
+            
+            // Print button
+            const printBtn = document.getElementById('printBtn');
+            printBtn.addEventListener('click', printEstimate);
+            
+            // Steel density (kg/m³)
+            const steelDensity = 7850;
+            
+            // Calculate all quantities
+            function calculateAll() {
+                calculateSlab();
+                calculateBeam();
+                calculateColumn();
+                calculateFooting();
+                calculateSummary();
+                
+                // Show results section if hidden
+                document.getElementById('resultsSection').style.display = 'block';
+            }
+            
+            // Slab calculation
+            function calculateSlab() {
+                const length = parseFloat(document.getElementById('slabLength').value) || 5;
+                const width = parseFloat(document.getElementById('slabWidth').value) || 4;
+                const thickness = parseFloat(document.getElementById('slabThickness').value) || 0.125;
+                
+                const mainDia = parseInt(document.getElementById('slabMainDia').value) || 10;
+                const mainSpacing = parseInt(document.getElementById('slabMainSpacing').value) || 150;
+                
+                const distDia = parseInt(document.getElementById('slabDistDia').value) || 10;
+                const distSpacing = parseInt(document.getElementById('slabDistSpacing').value) || 150;
+                
+                // Concrete volume
+                const concreteVol = length * width * thickness;
+                
+                // Main bars (along length)
+                const mainBars = Math.ceil(width / (mainSpacing / 1000)) + 1;
+                const mainBarLength = length + 0.5; // Adding 0.5m for hooks/overlaps
+                const mainSteelVol = mainBars * Math.PI * Math.pow(mainDia/2000, 2) * mainBarLength;
+                const mainSteelWeight = mainSteelVol * steelDensity;
+                
+                // Distribution bars (along width)
+                const distBars = Math.ceil(length / (distSpacing / 1000)) + 1;
+                const distBarLength = width + 0.5; // Adding 0.5m for hooks/overlaps
+                const distSteelVol = distBars * Math.PI * Math.pow(distDia/2000, 2) * distBarLength;
+                const distSteelWeight = distSteelVol * steelDensity;
+                
+                // Update results
+                document.getElementById('slabConcreteVol').textContent = `${math.round(concreteVol, 3)} m³`;
+                document.getElementById('slabDimensions').textContent = `${length}m × ${width}m × ${thickness}m`;
+                
+                document.getElementById('slabMainSteel').textContent = `${math.round(mainSteelWeight, 2)} kg`;
+                document.getElementById('slabMainBars').textContent = mainBars;
+                document.getElementById('slabMainDiaRes').textContent = mainDia;
+                document.getElementById('slabMainSpacingRes').textContent = mainSpacing;
+                
+                document.getElementById('slabDistSteel').textContent = `${math.round(distSteelWeight, 2)} kg`;
+                document.getElementById('slabDistBars').textContent = distBars;
+                document.getElementById('slabDistDiaRes').textContent = distDia;
+                document.getElementById('slabDistSpacingRes').textContent = distSpacing;
+                
+                return {
+                    concreteVol,
+                    mainSteelWeight,
+                    distSteelWeight
+                };
+            }
+            
+            // Beam calculation
+            function calculateBeam() {
+                const length = parseFloat(document.getElementById('beamLength').value) || 5;
+                const width = parseInt(document.getElementById('beamWidth').value) / 1000 || 0.23;
+                const depth = parseInt(document.getElementById('beamDepth').value) / 1000 || 0.45;
+                
+                const topBars = parseInt(document.getElementById('beamTopBars').value) || 3;
+                const topDia = parseInt(document.getElementById('beamTopDia').value) || 12;
+                
+                const bottomBars = parseInt(document.getElementById('beamBottomBars').value) || 3;
+                const bottomDia = parseInt(document.getElementById('beamBottomDia').value) || 16;
+                
+                const stirrupDia = parseInt(document.getElementById('beamStirrupDia').value) || 8;
+                const stirrupSpacing = parseInt(document.getElementById('beamStirrupSpacing').value) || 150;
+                
+                // Concrete volume
+                const concreteVol = length * width * depth;
+                
+                // Top steel
+                const topBarLength = length + 0.5; // Adding 0.5m for hooks/overlaps
+                const topSteelVol = topBars * Math.PI * Math.pow(topDia/2000, 2) * topBarLength;
+                const topSteelWeight = topSteelVol * steelDensity;
+                
+                // Bottom steel
+                const bottomBarLength = length + 0.5; // Adding 0.5m for hooks/overlaps
+                const bottomSteelVol = bottomBars * Math.PI * Math.pow(bottomDia/2000, 2) * bottomBarLength;
+                const bottomSteelWeight = bottomSteelVol * steelDensity;
+                
+                // Stirrups
+                const stirrupPerimeter = 2 * (width + depth - 0.08); // 0.04m cover on each side
+                const stirrupCount = Math.ceil(length / (stirrupSpacing / 1000));
+                const stirrupVol = stirrupCount * Math.PI * Math.pow(stirrupDia/2000, 2) * stirrupPerimeter;
+                const stirrupWeight = stirrupVol * steelDensity;
+                
+                // Update results
+                document.getElementById('beamConcreteVol').textContent = `${math.round(concreteVol, 3)} m³`;
+                document.getElementById('beamDimensions').textContent = `${math.round(width*1000)}mm × ${math.round(depth*1000)}mm × ${length}m`;
+                
+                document.getElementById('beamTopSteel').textContent = `${math.round(topSteelWeight, 2)} kg`;
+                document.getElementById('beamTopBarsRes').textContent = topBars;
+                document.getElementById('beamTopDiaRes').textContent = topDia;
+                
+                document.getElementById('beamBottomSteel').textContent = `${math.round(bottomSteelWeight, 2)} kg`;
+                document.getElementById('beamBottomBarsRes').textContent = bottomBars;
+                document.getElementById('beamBottomDiaRes').textContent = bottomDia;
+                
+                document.getElementById('beamStirrupSteel').textContent = `${math.round(stirrupWeight, 2)} kg`;
+                document.getElementById('beamStirrupDiaRes').textContent = stirrupDia;
+                document.getElementById('beamStirrupSpacingRes').textContent = stirrupSpacing;
+                
+                return {
+                    concreteVol,
+                    topSteelWeight,
+                    bottomSteelWeight,
+                    stirrupWeight
+                };
+            }
+            
+            // Column calculation
+            function calculateColumn() {
+                const height = parseFloat(document.getElementById('columnHeight').value) || 3;
+                const width = parseInt(document.getElementById('columnWidth').value) / 1000 || 0.3;
+                const depth = parseInt(document.getElementById('columnDepth').value) / 1000 || 0.3;
+                
+                const bars = parseInt(document.getElementById('columnBars').value) || 8;
+                const barDia = parseInt(document.getElementById('columnBarDia').value) || 12;
+                
+                const tieDia = parseInt(document.getElementById('columnTieDia').value) || 8;
+                const tieSpacingA = parseInt(document.getElementById('columnTieSpacingA').value) || 100;
+                const tieSpacingB = parseInt(document.getElementById('columnTieSpacingB').value) || 150;
+                
+                // Concrete volume
+                const concreteVol = height * width * depth;
+                
+                // Main bars
+                const barLength = height + 0.5; // Adding 0.5m for lap length
+                const mainSteelVol = bars * Math.PI * Math.pow(barDia/2000, 2) * barLength;
+                const mainSteelWeight = mainSteelVol * steelDensity;
+                
+                // Ties (assuming 1m zone A at bottom and top, rest zone B)
+                const zoneAHeight = 1; // First and last 1m
+                const zoneBHeight = Math.max(0, height - 2);
+                
+                const tiesZoneA = Math.ceil(zoneAHeight / (tieSpacingA / 1000)) * 2; // Top and bottom
+                const tiesZoneB = Math.ceil(zoneBHeight / (tieSpacingB / 1000));
+                const totalTies = tiesZoneA + tiesZoneB;
+                
+                const tiePerimeter = 2 * (width + depth - 0.08); // 0.04m cover on each side
+                const tieVol = totalTies * Math.PI * Math.pow(tieDia/2000, 2) * tiePerimeter;
+                const tieWeight = tieVol * steelDensity;
+                
+                // Update results
+                document.getElementById('columnConcreteVol').textContent = `${math.round(concreteVol, 3)} m³`;
+                document.getElementById('columnDimensions').textContent = `${math.round(width*1000)}mm × ${math.round(depth*1000)}mm × ${height}m`;
+                
+                document.getElementById('columnMainSteel').textContent = `${math.round(mainSteelWeight, 2)} kg`;
+                document.getElementById('columnBarsRes').textContent = bars;
+                document.getElementById('columnBarDiaRes').textContent = barDia;
+                
+                document.getElementById('columnTieSteel').textContent = `${math.round(tieWeight, 2)} kg`;
+                document.getElementById('columnTieDiaRes').textContent = tieDia;
+                document.getElementById('columnTieSpacingARes').textContent = tieSpacingA;
+                document.getElementById('columnTieSpacingBRes').textContent = tieSpacingB;
+                
+                return {
+                    concreteVol,
+                    mainSteelWeight,
+                    tieWeight
+                };
+            }
+            
+            // Footing calculation
+            function calculateFooting() {
+                const length = parseFloat(document.getElementById('footingLength').value) || 1.5;
+                const width = parseFloat(document.getElementById('footingWidth').value) || 1.5;
+                const thickness = parseFloat(document.getElementById('footingThickness').value) || 0.3;
+                
+                const mainDia = parseInt(document.getElementById('footingMainDia').value) || 10;
+                const mainSpacing = parseInt(document.getElementById('footingMainSpacing').value) || 150;
+                
+                // Concrete volume
+                const concreteVol = length * width * thickness;
+                
+                // Main bars (both directions)
+                const barsX = Math.ceil(width / (mainSpacing / 1000)) + 1;
+                const barLengthX = length + 0.5; // Adding 0.5m for hooks/overlaps
+                
+                const barsY = Math.ceil(length / (mainSpacing / 1000)) + 1;
+                const barLengthY = width + 0.5; // Adding 0.5m for hooks/overlaps
+                
+                const steelVol = (barsX * Math.PI * Math.pow(mainDia/2000, 2) * barLengthX) + 
+                                (barsY * Math.PI * Math.pow(mainDia/2000, 2) * barLengthY);
+                const steelWeight = steelVol * steelDensity;
+                
+                // Update results
+                document.getElementById('footingConcreteVol').textContent = `${math.round(concreteVol, 3)} m³`;
+                document.getElementById('footingDimensions').textContent = `${length}m × ${width}m × ${thickness}m`;
+                
+                document.getElementById('footingSteel').textContent = `${math.round(steelWeight, 2)} kg`;
+                document.getElementById('footingMainDiaRes').textContent = mainDia;
+                document.getElementById('footingMainSpacingRes').textContent = mainSpacing;
+                
+                return {
+                    concreteVol,
+                    steelWeight
+                };
+            }
+            
+            // Summary calculation
+            function calculateSummary() {
+                const slab = calculateSlab();
+                const beam = calculateBeam();
+                const column = calculateColumn();
+                const footing = calculateFooting();
+                
+                const cementRate = parseFloat(document.getElementById('cementRate').value) || 400;
+                const sandRate = parseFloat(document.getElementById('sandRate').value) || 800;
+                const aggregateRate = parseFloat(document.getElementById('aggregateRate').value) || 1000;
+                const steelRate = parseFloat(document.getElementById('steelRate').value) || 70;
+                
+                // Total quantities
+                const totalConcrete = slab.concreteVol + beam.concreteVol + column.concreteVol + footing.concreteVol;
+                const totalSteel = slab.mainSteelWeight + slab.distSteelWeight + 
+                                  beam.topSteelWeight + beam.bottomSteelWeight + beam.stirrupWeight + 
+                                  column.mainSteelWeight + column.tieWeight + 
+                                  footing.steelWeight;
+                
+                // Material calculations (assuming M25 for all except footing M20)
+                // Cement: 6.5 bags/m³ for M25, 6 bags/m³ for M20
+                const cementBags = (slab.concreteVol + beam.concreteVol + column.concreteVol) * 6.5 + 
+                                   footing.concreteVol * 6;
+                
+                // Sand: 0.52 m³/m³ for M25, 0.5 m³/m³ for M20
+                const sandVol = (slab.concreteVol + beam.concreteVol + column.concreteVol) * 0.52 + 
+                                footing.concreteVol * 0.5;
+                
+                // Aggregate: 0.84 m³/m³ for M25, 0.8 m³/m³ for M20
+                const aggregateVol = (slab.concreteVol + beam.concreteVol + column.concreteVol) * 0.84 + 
+                                     footing.concreteVol * 0.8;
+                
+                // Costs
+                const cementCost = cementBags * cementRate;
+                const sandCost = sandVol * sandRate;
+                const aggregateCost = aggregateVol * aggregateRate;
+                const steelCost = totalSteel * steelRate;
+                const totalCost = cementCost + sandCost + aggregateCost + steelCost;
+                
+                // Update results
+                document.getElementById('totalConcreteVol').textContent = `${math.round(totalConcrete, 3)} m³`;
+                document.getElementById('totalSteelWeight').textContent = `${math.round(totalSteel, 2)} kg`;
+                
+                document.getElementById('costBreakdown').innerHTML = `
+                    <tr>
+                        <td>Cement</td>
+                        <td>${math.round(cementBags, 1)} bags</td>
+                        <td>₹${cementRate}/bag</td>
+                        <td>₹${math.round(cementCost)}</td>
+                    </tr>
+                    <tr>
+                        <td>Sand</td>
+                        <td>${math.round(sandVol, 2)} m³</td>
+                        <td>₹${sandRate}/m³</td>
+                        <td>₹${math.round(sandCost)}</td>
+                    </tr>
+                    <tr>
+                        <td>Aggregate</td>
+                        <td>${math.round(aggregateVol, 2)} m³</td>
+                        <td>₹${aggregateRate}/m³</td>
+                        <td>₹${math.round(aggregateCost)}</td>
+                    </tr>
+                    <tr>
+                        <td>Steel</td>
+                        <td>${math.round(totalSteel, 2)} kg</td>
+                        <td>₹${steelRate}/kg</td>
+                        <td>₹${math.round(steelCost)}</td>
+                    </tr>
+                `;
+                
+                document.getElementById('totalCost').textContent = `₹${math.round(totalCost)}`;
+                document.getElementById('projectTotal').textContent = `₹${math.round(totalCost).toLocaleString()}`;
+            }
+            
+            // Reset all fields
+            function resetAll() {
+                // Reset slab
+                document.getElementById('slabLength').value = '5';
+                document.getElementById('slabWidth').value = '4';
+                document.getElementById('slabThickness').value = '0.125';
+                document.getElementById('slabMainDia').value = '10';
+                document.getElementById('slabMainSpacing').value = '150';
+                document.getElementById('slabDistDia').value = '10';
+                document.getElementById('slabDistSpacing').value = '150';
+                
+                // Reset beam
+                document.getElementById('beamLength').value = '5';
+                document.getElementById('beamWidth').value = '230';
+                document.getElementById('beamDepth').value = '450';
+                document.getElementById('beamTopBars').value = '3';
+                document.getElementById('beamTopDia').value = '12';
+                document.getElementById('beamBottomBars').value = '3';
+                document.getElementById('beamBottomDia').value = '16';
+                document.getElementById('beamStirrupDia').value = '8';
+                document.getElementById('beamStirrupSpacing').value = '150';
+                
+                // Reset column
+                document.getElementById('columnHeight').value = '3';
+                document.getElementById('columnWidth').value = '300';
+                document.getElementById('columnDepth').value = '300';
+                document.getElementById('columnBars').value = '8';
+                document.getElementById('columnBarDia').value = '12';
+                document.getElementById('columnTieDia').value = '8';
+                document.getElementById('columnTieSpacingA').value = '100';
+                document.getElementById('columnTieSpacingB').value = '150';
+                
+                // Reset footing
+                document.getElementById('footingLength').value = '1.5';
+                document.getElementById('footingWidth').value = '1.5';
+                document.getElementById('footingThickness').value = '0.3';
+                document.getElementById('footingMainDia').value = '10';
+                document.getElementById('footingMainSpacing').value = '150';
+                
+                // Reset rates
+                document.getElementById('cementRate').value = '400';
+                document.getElementById('sandRate').value = '800';
+                document.getElementById('aggregateRate').value = '1000';
+                document.getElementById('steelRate').value = '70';
+                
+                // Reset tabs
+                tabBtns.forEach(b => b.classList.remove('active'));
+                document.querySelector('.tab-btn[data-tab="slab"]').classList.add('active');
+                
+                tabContents.forEach(c => c.classList.remove('active'));
+                document.getElementById('slab-tab').classList.add('active');
+                document.getElementById('slab-results').classList.add('active');
+            }
+            
+            // Print estimate
+            function printEstimate() {
+                window.print();
+            }
+            
+            // Initialize with default calculation
+            calculateAll();
+        });
+    </script>
+</body>
+</html>
